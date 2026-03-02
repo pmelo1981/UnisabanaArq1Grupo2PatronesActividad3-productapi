@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: productapi
       valueFiles:
-        - values.yaml
+        - values-acr.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: productapi
