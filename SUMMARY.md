@@ -28,8 +28,10 @@
 - Acceso directo por IP y URL de Azure
 
 #### CI/CD y GitOps
-- GitHub Actions Pipeline (build, test, Docker build/push)
-- ArgoCD manifests preparados (namespace + application)
+- **GitHub Actions** Pipeline (build, test, Docker build/push) - ✅ Verificado
+- **ArgoCD** instalado y configurado - ✅ Synced + Healthy
+  - Dashboard: `https://productapi-argocd.centralus.cloudapp.azure.com`
+  - Sincronizacion automatica desde Git (auto-sync + self-heal)
 
 ### Scripts de Despliegue
 
@@ -48,14 +50,19 @@
 | AKS Cluster | 1 nodo Standard_D2s_v3 (x86-64, 2 vCPU, 8GB RAM) |
 | ACR | Basic SKU, nombre generado dinamicamente |
 | Ingress | NGINX Controller v1.9.4 con DNS label de Azure |
+| ArgoCD | LoadBalancer con DNS label `productapi-argocd` |
 | Region | centralus |
 | Suscripcion | Azure for Students |
 
-### URL de Acceso
+### URLs de Acceso
 
-Despues del despliegue la API queda accesible en:
-- `http://productapi.centralus.cloudapp.azure.com/api/products/health`
-- `http://productapi.centralus.cloudapp.azure.com/api/products`
+Despues del despliegue quedan accesibles:
+
+| Servicio | URL |
+|----------|-----|
+| API Health | `http://productapi.centralus.cloudapp.azure.com/api/products/health` |
+| API Products | `http://productapi.centralus.cloudapp.azure.com/api/products` |
+| ArgoCD Dashboard | `https://productapi-argocd.centralus.cloudapp.azure.com` |
 
 ### Estructura del Repositorio
 

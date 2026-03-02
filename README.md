@@ -31,6 +31,7 @@ Este proyecto implementa un microservicio REST API en .NET 10 con despliegue com
 graph TD
     User["Usuario / Navegador"]
     DNS["productapi.centralus.cloudapp.azure.com"]
+    DNS_ARGO["productapi-argocd.centralus.cloudapp.azure.com"]
     LB["Azure Load Balancer"]
     NGINX["NGINX Ingress Controller"]
     SVC["Service ClusterIP :80"]
@@ -38,10 +39,13 @@ graph TD
     POD2["Pod ProductAPI :8080"]
     HPA["HPA 2-5 replicas"]
     ACR["Azure Container Registry"]
-    AKS["Azure AKS Cluster"]
+    ARGO["ArgoCD"]
+    GIT["GitHub Repository"]
 
     User -->|HTTP| DNS
+    User -->|HTTPS| DNS_ARGO
     DNS --> LB
+    DNS_ARGO --> ARGO
     LB --> NGINX
 
     subgraph AKS_Cluster["AKS Cluster (Standard_D2s_v3)"]
@@ -49,10 +53,12 @@ graph TD
         SVC --> POD1
         SVC --> POD2
         HPA -.->|escala| SVC
+        ARGO -.->|sincroniza| SVC
     end
 
     ACR -.->|pull imagen| POD1
     ACR -.->|pull imagen| POD2
+    GIT -.->|GitOps| ARGO
 ```
 
 ### Diagrama de Flujo de Despliegue
@@ -125,13 +131,15 @@ graph LR
     Test["Ejecutar 14 Tests"]
     Docker["Build Docker Image"]
     Registry["Push a Registry"]
+    ArgoCD["ArgoCD Sync"]
     Deploy["Deploy a AKS"]
 
     Push --> Build
     Build --> Test
     Test -->|Pass| Docker
     Docker --> Registry
-    Registry --> Deploy
+    Registry --> ArgoCD
+    ArgoCD --> Deploy
 
     Test -->|Fail| Fail["Pipeline detenido"]
 ```
@@ -197,6 +205,26 @@ Al finalizar, la API queda accesible en:
 http://productapi.centralus.cloudapp.azure.com/api/products/health
 http://productapi.centralus.cloudapp.azure.com/api/products
 ```
+
+### Acceso a ArgoCD (GitOps Dashboard)
+
+ArgoCD esta instalado en el cluster y expuesto publicamente:
+
+| | |
+|---|---|
+| **URL** | `https://productapi-argocd.centralus.cloudapp.azure.com` |
+| **Usuario** | `admin` |
+| **Password** | Obtener con: `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" \| base64 -d` |
+
+ArgoCD sincroniza automaticamente los cambios del repositorio Git al cluster (auto-sync + self-heal).
+
+### CI/CD Verificado
+
+| Componente | Estado | Detalle |
+|------------|--------|---------|
+| GitHub Actions | ✅ Funcionando | Build, test (14/14), Docker build/push |
+| ArgoCD | ✅ Synced + Healthy | Sincronizacion automatica desde Git |
+| Pruebas Unitarias | ✅ 14/14 pasando | xUnit + Moq |
 
 ### Endpoints de la API
 
@@ -266,8 +294,8 @@ Ejemplo de respuesta de productos:
 - **Contenedorizacion**: Docker multietapa optimizado para produccion
 - **Orquestacion**: Kubernetes con Helm Charts configurables y auto-scaling
 - **Ingress**: NGINX como punto de entrada unico con DNS de Azure
-- **CI/CD**: Pipeline automatizado con GitHub Actions
-- **GitOps**: ArgoCD configurado para despliegue continuo desde Git
+- **CI/CD**: Pipeline automatizado con GitHub Actions - ✅ Verificado
+- **GitOps**: ArgoCD sincronizando automaticamente desde Git - ✅ Synced + Healthy
 - **Infraestructura como codigo**: Scripts reproducibles para crear y destruir el entorno completo
 
 ### Eliminar recursos (evitar costos)
