@@ -1,6 +1,43 @@
 @ProductAPI_HostAddress = http://localhost:5034
 
-GET {{ProductAPI_HostAddress}}/weatherforecast/
+### Health Check
+GET {{ProductAPI_HostAddress}}/api/products/health
 Accept: application/json
 
-###
+### Obtener todos los productos
+GET {{ProductAPI_HostAddress}}/api/products
+Accept: application/json
+
+### Obtener producto por ID
+GET {{ProductAPI_HostAddress}}/api/products/1
+Accept: application/json
+
+### Crear nuevo producto
+POST {{ProductAPI_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Teclado mecánico",
+  "description": "Teclado gaming RGB",
+  "price": 89.99,
+  "stock": 25
+}
+
+### Actualizar producto
+PUT {{ProductAPI_HostAddress}}/api/products/1
+Content-Type: application/json
+
+{
+  "name": "Laptop actualizada",
+  "description": "Laptop de alto rendimiento con SSD",
+  "price": 1499.99,
+  "stock": 15
+}
+
+### Eliminar producto
+DELETE {{ProductAPI_HostAddress}}/api/products/1
+
+````````
+
+
+# Response
