@@ -2,13 +2,15 @@
 
 <#
 .SYNOPSIS
-  Instala ArgoCD en AKS, aplica manifests versionados y obtiene credenciales.
+  Instala ArgoCD en AKS, aplica manifests desde el repo Infrastructure y obtiene credenciales.
 .DESCRIPTION
   - Crea namespace argocd
   - Instala ArgoCD desde manifests oficiales
   - Espera a que argocd-server obtenga LoadBalancer IP
-  - Aplica argocd/application.yaml
+  - Clona repo Infrastructure y aplica Application manifests
   - Muestra comando para obtener admin password
+.PARAMETER InfraRepo
+  URL del repo de Infrastructure con los manifests de ArgoCD
 .PARAMETER Timeout
   Timeout en segundos para esperar IP (default 600s = 10 min)
 .PARAMETER Interval
@@ -16,6 +18,7 @@
 #>
 
 param(
+    [string]$InfraRepo = "https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure.git",
     [int]$Timeout = 600,
     [int]$Interval = 10
 )
@@ -79,13 +82,19 @@ try {
         $argocdIP = "<PENDING>"
     }
 
-    # 5. Aplicar argocd/application.yaml
-    Write-Host "5️⃣  Aplicando ArgoCD Application manifest..." -ForegroundColor Yellow
-    if (-not (Test-Path "argocd/application.yaml")) {
-        throw "argocd/application.yaml no encontrado"
+    # 5. Clonar repo Infrastructure y aplicar manifests de ArgoCD
+    Write-Host "5️⃣  Clonando repo Infrastructure para obtener manifests..." -ForegroundColor Yellow
+    $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "argocd-infra-$(Get-Random)"
+    git clone --depth 1 $InfraRepo $tempDir 2>&1 | Out-Null
+
+    if (-not (Test-Path "$tempDir/argocd/applications/productapi.yaml")) {
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        throw "productapi.yaml no encontrado en repo Infrastructure"
     }
-    kubectl apply -f argocd/application.yaml
-    Write-Host "✅ Application aplicada`n" -ForegroundColor Green
+
+    kubectl apply -f "$tempDir/argocd/applications/productapi.yaml"
+    Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+    Write-Host "✅ Application aplicada desde repo Infrastructure`n" -ForegroundColor Green
 
     # 6. Crear namespace productapi si no existe
     Write-Host "6️⃣  Asegurando namespace productapi..." -ForegroundColor Yellow
