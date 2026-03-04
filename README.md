@@ -210,6 +210,8 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 
 - **Infrastructure Repo**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
 - **Personal Repo**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3
+- **ArgoCD UI**: https://20.112.202.75 (usuario: `admin`, contraseña: ver Infrastructure README)
+- **Ingress IP**: 20.84.230.209
 - [ArgoCD Docs](https://argo-cd.readthedocs.io/)
 - [Helm Docs](https://helm.sh/docs/)
 - [AKS Best Practices](https://learn.microsoft.com/en-us/azure/aks/)
