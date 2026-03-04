@@ -2,7 +2,7 @@
 
 API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
-**Acceso en vivo:** https://20.84.230.209/api/products
+**Acceso en vivo:** https://productapi-unisabana.centralus.cloudapp.azure.com/api/products
 
 ---
 
@@ -88,38 +88,43 @@ README.md                               # Este archivo
 
 ## 🌐 Acceso en Vivo
 
-**Base URL (PRODUCCIÓN):**
+**Base URL (PRODUCCION - FQDN permanente):**
 ```
-https://20.84.230.209
+https://productapi-unisabana.centralus.cloudapp.azure.com
+```
+
+**IP publica (puede cambiar):**
+```
+20.84.230.209
 ```
 
 ### Ejemplos de uso
 
 **Health check:**
 ```bash
-curl https://20.84.230.209/api/products/health
+curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products/health
 ```
 
 **Listar todos los productos:**
 ```bash
-curl https://20.84.230.209/api/products
+curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products
 ```
 
 **Obtener estadísticas:**
 ```bash
-curl https://20.84.230.209/api/products/stats
+curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products/stats
 ```
 
 **Crear producto:**
 ```bash
-curl -X POST https://20.84.230.209/api/products \
+curl -X POST https://productapi-unisabana.centralus.cloudapp.azure.com/api/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Laptop","description":"Gaming laptop","price":1299.99}'
 ```
 
 **Swagger UI (documentación interactiva):**
 ```
-https://20.84.230.209/swagger
+https://productapi-unisabana.centralus.cloudapp.azure.com/swagger
 ```
 
 ---
@@ -133,7 +138,7 @@ dotnet test
 # Output: 14 passed OK
 ```
 
-### Ejecución Local
+### Ejecucion Local
 
 ```bash
 dotnet run --project src/ProductAPI/ProductAPI.csproj
@@ -152,11 +157,11 @@ docker run -p 8080:8080 productapi:local
 
 ## 📊 API Endpoints Detallados
 
-| Método | Endpoint | Body | Descripción |
+| Metodo | Endpoint | Body | Descripcion |
 |--------|----------|------|------------|
 | GET | `/api/products` | - | Lista todos los productos |
 | GET | `/api/products/{id}` | - | Obtiene producto por ID |
-| GET | `/api/products/stats` | - | Estadísticas: total, promedio, máximo, mínimo |
+| GET | `/api/products/stats` | - | Estadisticas: total, promedio, maximo, minimo |
 | POST | `/api/products` | `{name, description, price}` | Crear nuevo |
 | PUT | `/api/products/{id}` | `{name, description, price}` | Actualizar |
 | DELETE | `/api/products/{id}` | - | Eliminar |
@@ -179,7 +184,7 @@ docker run -p 8080:8080 productapi:local
 El pipeline se dispara automáticamente al hacer `git push` en `main`:
 
 ```
-1. Checkout código
+1. Checkout codigo
 2. Setup .NET 10
 3. dotnet restore (NuGet)
 4. dotnet build -c Release
@@ -188,7 +193,7 @@ El pipeline se dispara automáticamente al hacer `git push` en `main`:
 7. docker build -f docker/Dockerfile
 8. docker push → ACR (tag: git SHA + latest)
 9. sed actualiza values-acr.yaml con nuevo tag
-10. git push automático
+10. git push automatico
     ↓
     ArgoCD detecta (cada 3 min)
     ↓
@@ -216,9 +221,9 @@ ArgoCD detecta el cambio (~3 minutos)
     ↓
 kubectl apply de Helm charts
     ↓
-Deployment actualizado automáticamente en AKS
+Deployment actualizado automaticamente en AKS
     ↓
-Disponible en: https://20.84.230.209/api/...
+Disponible en: https://productapi-unisabana.centralus.cloudapp.azure.com/api/...
 
 Infraestructura (ArgoCD, Helm, K8s config):  
 👉 https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
@@ -250,7 +255,7 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 
 ---
 
-## 📚 Documentación
+## 📚 Documentacion
 
 - **Infrastructure Repo (GitOps, ArgoCD, K8s)**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
 - **ArgoCD UI**: https://20.112.202.75 (usuario: admin, ver Infrastructure README)
@@ -275,4 +280,4 @@ Esto borra: AKS, ACR, Load Balancer, Storage, todo. (~$40/mes si no lo haces)
 
 **Estado:** Produccion-Ready  
 **Ultima actualizacion:** 2024  
-**URL en vivo:** https://20.84.230.209
+**URL en vivo:** https://productapi-unisabana.centralus.cloudapp.azure.com
