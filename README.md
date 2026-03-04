@@ -2,6 +2,10 @@
 
 API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
+**Acceso en vivo:** https://20.84.230.209/api/products
+
+---
+
 ## 🚀 Tecnologías
 
 - **.NET 10** - Framework
@@ -82,13 +86,51 @@ README.md                               # Este archivo
 
 ---
 
-## 🚀 Quick Start
+## 🌐 Acceso en Vivo
+
+**Base URL (PRODUCCIÓN):**
+```
+https://20.84.230.209
+```
+
+### Ejemplos de uso
+
+**Health check:**
+```bash
+curl https://20.84.230.209/api/products/health
+```
+
+**Listar todos los productos:**
+```bash
+curl https://20.84.230.209/api/products
+```
+
+**Obtener estadísticas:**
+```bash
+curl https://20.84.230.209/api/products/stats
+```
+
+**Crear producto:**
+```bash
+curl -X POST https://20.84.230.209/api/products \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Laptop","description":"Gaming laptop","price":1299.99}'
+```
+
+**Swagger UI (documentación interactiva):**
+```
+https://20.84.230.209/swagger
+```
+
+---
+
+## 🚀 Quick Start (Local)
 
 ### Tests
 
 ```bash
 dotnet test
-# Output: 14 passed ✅
+# Output: 14 passed OK
 ```
 
 ### Ejecución Local
@@ -174,11 +216,13 @@ ArgoCD detecta el cambio (~3 minutos)
     ↓
 kubectl apply de Helm charts
     ↓
-Deployment actualizado automáticamente en AKS ✅
-```
+Deployment actualizado automáticamente en AKS
+    ↓
+Disponible en: https://20.84.230.209/api/...
 
-**Infraestructura (ArgoCD, Helm, K8s config):**  
+Infraestructura (ArgoCD, Helm, K8s config):  
 👉 https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+```
 
 ---
 
@@ -206,15 +250,14 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 
 ---
 
-## 📚 Documentación Adicional
+## 📚 Documentación
 
-- **Infrastructure Repo**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
-- **Personal Repo**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3
-- **ArgoCD UI**: https://20.112.202.75 (usuario: `admin`, contraseña: ver Infrastructure README)
-- **Ingress IP**: 20.84.230.209
+- **Infrastructure Repo (GitOps, ArgoCD, K8s)**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+- **ArgoCD UI**: https://20.112.202.75 (usuario: admin, ver Infrastructure README)
 - [ArgoCD Docs](https://argo-cd.readthedocs.io/)
 - [Helm Docs](https://helm.sh/docs/)
 - [AKS Best Practices](https://learn.microsoft.com/en-us/azure/aks/)
+- [Kubernetes Docs](https://kubernetes.io/docs/)
 
 ---
 
@@ -230,6 +273,6 @@ Esto borra: AKS, ACR, Load Balancer, Storage, todo. (~$40/mes si no lo haces)
 
 ---
 
-**Estado:** ✅ Producción-Ready  
-**Última actualización:** 2024  
-**Licencia:** MIT
+**Estado:** Produccion-Ready  
+**Ultima actualizacion:** 2024  
+**URL en vivo:** https://20.84.230.209
