@@ -89,11 +89,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\pablo\\source\\repos\\UnisabanaArq1Grupo2PatronesActividad3\\src\\ProductAPI\\ProductAPI.csproj",
+      "projectUniqueName": "C:\\Users\\pablo\\source\\repos\\UnisabanaArq1Grupo2PatronesActividad3-productapi\\src\\ProductAPI\\ProductAPI.csproj",
       "projectName": "ProductAPI",
-      "projectPath": "C:\\Users\\pablo\\source\\repos\\UnisabanaArq1Grupo2PatronesActividad3\\src\\ProductAPI\\ProductAPI.csproj",
+      "projectPath": "C:\\Users\\pablo\\source\\repos\\UnisabanaArq1Grupo2PatronesActividad3-productapi\\src\\ProductAPI\\ProductAPI.csproj",
       "packagesPath": "C:\\Users\\pablo\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\pablo\\source\\repos\\UnisabanaArq1Grupo2PatronesActividad3\\src\\ProductAPI\\obj\\",
+      "outputPath": "C:\\Users\\pablo\\source\\repos\\UnisabanaArq1Grupo2PatronesActividad3-productapi\\src\\ProductAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
