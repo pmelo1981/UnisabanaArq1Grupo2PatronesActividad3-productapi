@@ -10,34 +10,22 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 - **Helm 3** - Gestión de configuración
 - **NGINX Ingress Controller** - Enrutamiento HTTP(S)
 - **ArgoCD** - GitOps automático
-- **GitHub Actions** - CI/CD
-- **Azure Container Registry** - Registry de imágenes
-
-## 📡 API REST
-
-```
-GET    /api/products              # Obtener todos
-GET    /api/products/{id}         # Obtener por ID
-GET    /api/products/stats        # Estadísticas (total, promedio, max, min)
-POST   /api/products              # Crear
-PUT    /api/products/{id}         # Actualizar
-DELETE /api/products/{id}         # Eliminar
-GET    /api/products/health       # Health check
-```
-
-## 📚 Documentación
-
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Arquitectura y patrones
-- [GETTING_STARTED.md](docs/GETTING_STARTED.md) - Inicio local
-- [TESTING.md](docs/TESTING.md) - Pruebas unitarias y Swagger
-- [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) - Paso a paso manual
-- [azure/README.md](azure/README.md) - Información de Azure
+- **GitHub Actions** - CI/CD (Build → Test → Docker Push → Auto-deploy)
+- **Azure Container Registry** - Registry privado de imágenes
 
 ---
 
-# 📦 ProductAPI Repository
+## 📡 API REST - 7 Endpoints
 
-**API REST de productos en .NET 10 con Kubernetes, Helm, CI/CD y GitOps.**
+```
+GET    /api/products              # Obtener todos los productos
+GET    /api/products/{id}         # Obtener por ID
+GET    /api/products/stats        # Estadísticas (total, promedio, máximo, mínimo)
+POST   /api/products              # Crear nuevo producto
+PUT    /api/products/{id}         # Actualizar producto
+DELETE /api/products/{id}         # Eliminar producto
+GET    /api/products/health       # Health check
+```
 
 ---
 
@@ -46,10 +34,10 @@ GET    /api/products/health       # Health check
 Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar productos.
 
 - ✅ 7 endpoints REST (CRUD + stats + health)
-- ✅ 15 tests unitarios (xUnit)
-- ✅ Dockerfile multistage
-- ✅ Helm Charts
-- ✅ GitHub Actions CI/CD
+- ✅ 14 tests unitarios (xUnit)
+- ✅ Dockerfile multistage (~150MB)
+- ✅ Helm Charts con values.yaml + values-acr.yaml
+- ✅ GitHub Actions CI/CD (ACR push automático)
 - ✅ Despliega automáticamente en AKS vía ArgoCD
 
 ---
@@ -59,23 +47,37 @@ Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar p
 ```
 src/
 ├── ProductAPI/
-│   ├── Program.cs                    # Entry point, DI, Swagger
-│   ├── Controllers/ProductsController.cs   # 6 endpoints REST
-│   ├── Models/Product.cs             # Domain model
-│   └── Repositories/ProductRepository.cs   # In-memory storage
+│   ├── Program.cs                      # Entry point, DI, Swagger
+│   ├── Controllers/ProductsController.cs    # 7 endpoints REST
+│   ├── Models/Product.cs               # Domain model
+│   └── Repositories/ProductRepository.cs    # In-memory storage
 └── ProductAPI.Tests/
-    ├── ProductRepositoryTests.cs     # 7 tests
-    └── ProductsControllerTests.cs    # 8 tests
+    └── ProductsControllerTests.cs      # 14 tests (xUnit)
 
 docker/
-└── Dockerfile                        # Multistage: build → runtime
+└── Dockerfile                          # Multistage: sdk → aspnet runtime
 
 helm/
-├── Chart.yaml, values.yaml, values-acr.yaml
-└── templates/ (deployment, service, hpa, ingress)
+├── Chart.yaml
+├── values.yaml                         # Default values
+├── values-acr.yaml                     # ACR overrides (image tag versionado)
+└── templates/
+    ├── deployment.yaml
+    ├── service.yaml
+    ├── hpa.yaml                        # Horizontal Pod Autoscaler
+    └── ingress.yaml                    # NGINX Ingress
 
-.github/workflows/ci-cd.yml           # Build → Test → ACR Push → Auto-deploy
-azure/                                # PowerShell scripts para Azure
+.github/workflows/
+└── ci-cd.yml                           # Build → Test → Docker Push ACR → Update tag → Push
+
+azure/
+├── setup-argocd.ps1                    # Install ArgoCD + apply manifests
+├── create-aks-cluster.ps1              # Crear cluster
+├── setup-acr-and-deploy.ps1            # Setup ACR
+├── verify-deploy.ps1                   # Verificar despliegue
+└── delete-all-resources.ps1            # Limpiar (muy importante)
+
+README.md                               # Este archivo
 ```
 
 ---
@@ -85,10 +87,11 @@ azure/                                # PowerShell scripts para Azure
 ### Tests
 
 ```bash
-dotnet test  # 15 tests passing ✅
+dotnet test
+# Output: 14 passed ✅
 ```
 
-### Local Execution
+### Ejecución Local
 
 ```bash
 dotnet run --project src/ProductAPI/ProductAPI.csproj
@@ -100,58 +103,131 @@ dotnet run --project src/ProductAPI/ProductAPI.csproj
 ```bash
 docker build -f docker/Dockerfile -t productapi:local .
 docker run -p 8080:8080 productapi:local
+# Probar: curl http://localhost:8080/api/products/health
 ```
 
 ---
 
-## 📡 API Endpoints
+## 📊 API Endpoints Detallados
 
-| Método | Endpoint | Descripción |
-|--------|----------|------------|
-| GET | `/api/products` | Todos los productos |
-| GET | `/api/products/{id}` | Producto por ID |
-| POST | `/api/products` | Crear producto |
-| PUT | `/api/products/{id}` | Actualizar producto |
-| DELETE | `/api/products/{id}` | Eliminar producto |
-| GET | `/api/products/health` | Health check |
+| Método | Endpoint | Body | Descripción |
+|--------|----------|------|------------|
+| GET | `/api/products` | - | Lista todos los productos |
+| GET | `/api/products/{id}` | - | Obtiene producto por ID |
+| GET | `/api/products/stats` | - | Estadísticas: total, promedio, máximo, mínimo |
+| POST | `/api/products` | `{name, description, price}` | Crear nuevo |
+| PUT | `/api/products/{id}` | `{name, description, price}` | Actualizar |
+| DELETE | `/api/products/{id}` | - | Eliminar |
+| GET | `/api/products/health` | - | Status de salud |
+
+**Ejemplo de respuesta `/stats`:**
+```json
+{
+  "total": 5,
+  "promedio": 299.99,
+  "maximo": 999.99,
+  "minimo": 9.99
+}
+```
+
+---
+
+## 🔄 CI/CD Pipeline (GitHub Actions)
+
+El pipeline se dispara automáticamente al hacer `git push` en `main`:
+
+```
+1. Checkout código
+2. Setup .NET 10
+3. dotnet restore (NuGet)
+4. dotnet build -c Release
+5. dotnet test (14 tests)
+6. Login a Azure Container Registry
+7. docker build -f docker/Dockerfile
+8. docker push → ACR (tag: git SHA + latest)
+9. sed actualiza values-acr.yaml con nuevo tag
+10. git push automático
+    ↓
+    ArgoCD detecta (cada 3 min)
+    ↓
+    helm upgrade en Kubernetes
+    ↓
+    Rolling update (zero-downtime)
+```
+
+**No necesitas Docker Desktop.** Todo se construye en runners de GitHub en la nube.
 
 ---
 
 ## 🌐 GitOps Workflow
 
 ```
-Código pusheado
+ProductAPI Repo (main branch)
     ↓
-GitHub Actions: build → test → docker push
+git push
     ↓
-values-acr.yaml actualizado automáticamente
+GitHub Actions: Build → Test → Docker Push a ACR
     ↓
-ArgoCD detecta cambio (cada 3 min)
+Actualiza helm/values-acr.yaml con nueva imagen
     ↓
-helm upgrade en Kubernetes
+ArgoCD detecta el cambio (~3 minutos)
     ↓
-Deployment automático ✅
+kubectl apply de Helm charts
+    ↓
+Deployment actualizado automáticamente en AKS ✅
 ```
 
-**Ver Infraestructura**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+**Infraestructura (ArgoCD, Helm, K8s config):**  
+👉 https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
 
 ---
 
-## ⚙️ Deployment Kubernetes
+## ⚙️ Despliegue Manual en Kubernetes
 
 ```bash
-# Helm deploy
+# Usar valores desde ProductAPI repo
 helm upgrade --install productapi ./helm \
-  --namespace productapi --create-namespace \
-  --set image.repository=REGISTRY/productapi \
-  --set image.tag=v1.0.0
+  --namespace productapi \
+  --create-namespace \
+  -f helm/values-acr.yaml
 ```
 
 ---
 
-## 📚 Más info
+## 🔐 Secretos Necesarios (GitHub)
 
-- [Infrastructure Repo](https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure) - GitOps Central
-- [Personal Repo](https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3) - Referencia completa
+Para que el CI/CD funcione, agrega estos **Repository Secrets** en:  
+https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/settings/secrets/actions
 
-**Estado:** ✅ Producción-Ready
+| Secret | Ejemplo |
+|--------|---------|
+| `ACR_USERNAME` | `productapiregistry163505` |
+| `ACR_PASSWORD` | `(access key del ACR)` |
+
+---
+
+## 📚 Documentación Adicional
+
+- **Infrastructure Repo**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+- **Personal Repo**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3
+- [ArgoCD Docs](https://argo-cd.readthedocs.io/)
+- [Helm Docs](https://helm.sh/docs/)
+- [AKS Best Practices](https://learn.microsoft.com/en-us/azure/aks/)
+
+---
+
+## ⚠️ Importante: Limpieza
+
+**Cuando termines el assignment, elimina TODOS los recursos** para evitar cargos:
+
+```bash
+az group delete --name productapi-rg --yes
+```
+
+Esto borra: AKS, ACR, Load Balancer, Storage, todo. (~$40/mes si no lo haces)
+
+---
+
+**Estado:** ✅ Producción-Ready  
+**Última actualización:** 2024  
+**Licencia:** MIT
