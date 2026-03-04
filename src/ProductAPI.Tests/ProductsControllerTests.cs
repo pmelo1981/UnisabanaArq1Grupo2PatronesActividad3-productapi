@@ -117,4 +117,16 @@ public class ProductsControllerTests
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Equal(404, notFoundResult.StatusCode);
     }
+
+    [Fact]
+    public async Task GetStats_ReturnsOkResult()
+    {
+        // Arrange & Act
+        var result = await _controller.GetStats();
+
+        // Assert
+        Assert.NotNull(result);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.Equal(200, okResult.StatusCode);
+    }
 }

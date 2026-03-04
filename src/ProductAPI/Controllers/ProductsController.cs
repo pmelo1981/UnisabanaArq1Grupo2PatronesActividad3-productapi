@@ -22,6 +22,22 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
+    [HttpGet("stats")]
+    public async Task<ActionResult<object>> GetStats()
+    {
+        var products = (await _repository.GetAllAsync()).ToList();
+        if (!products.Any())
+            return Ok(new { total = 0, promedio = 0, maximo = 0, minimo = 0 });
+
+        return Ok(new
+        {
+            total = products.Count,
+            promedio = Math.Round(products.Average(p => p.Price), 2),
+            maximo = products.Max(p => p.Price),
+            minimo = products.Min(p => p.Price)
+        });
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetById(int id)
     {
