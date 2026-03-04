@@ -34,247 +34,123 @@ GET    /api/products/health       # Health check
 
 ---
 
-## 🚀 DEPLOYMENT RÁPIDO (5 pasos)
+# 📦 ProductAPI Repository
 
-### Prerequisitos
-```powershell
-# Verificar que tengas esto
-az account show              # Autenticado en Azure
-docker --version             # Docker instalado
-kubectl version --client     # kubectl instalado
-helm version                 # Helm 3 instalado
-```
-
-### Paso 1: Crear Cluster AKS
-```powershell
-.\azure\create-aks-cluster.ps1
-```
-**Qué hace:**
-- ✅ Crea Resource Group
-- ✅ Crea cluster AKS (2 nodos Standard_B2s)
-- ✅ Instala NGINX Ingress Controller
-- ✅ Espera LoadBalancer IP
-- ⏱️ Tiempo: 5-10 minutos
-
-### Paso 2: Setup ACR y Deploy
-```powershell
-.\azure\setup-acr-and-deploy.ps1
-```
-**Qué hace:**
-- ✅ Crea Azure Container Registry
-- ✅ Build imagen Docker
-- ✅ Push a ACR
-- ✅ Genera helm/values-acr.yaml
-- ✅ Deploy con Helm
-- ⏱️ Tiempo: 3-5 minutos
-
-### Paso 3: Instalar ArgoCD
-```powershell
-.\azure\setup-argocd.ps1
-```
-**Qué hace:**
-- ✅ Crea namespace argocd
-- ✅ Instala ArgoCD oficial
-- ✅ Espera LoadBalancer IP
-- ✅ Aplica application manifest
-- ✅ Muestra credenciales
-- ⏱️ Tiempo: 2-3 minutos
-
-### Paso 4: Verificar Deployment
-```powershell
-.\azure\verify-deploy.ps1
-```
-**Qué hace:**
-- ✅ Verifica pods Running
-- ✅ Verifica HPA activo
-- ✅ Verifica LoadBalancer IP
-- ✅ Verifica health endpoint
-- ✅ Verifica ArgoCD Application
-
-### Paso 5: LIMPIAR (¡Importante!)
-```powershell
-az group delete --name productapi-rg --yes
-```
-⚠️ **Esto elimina TODO y detiene costos**
+**API REST de productos en .NET 10 con Kubernetes, Helm, CI/CD y GitOps.**
 
 ---
 
-## 🔐 Acceder a ArgoCD UI
+## 🎯 Descripción
 
-```powershell
-# Terminal 1: Port-forward
-kubectl port-forward svc/argocd-server -n argocd 8443:443
+Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar productos.
 
-# Terminal 2: Obtener password
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+- ✅ 6 endpoints CRUD
+- ✅ 15 tests unitarios (xUnit)
+- ✅ Dockerfile multistage
+- ✅ Helm Charts
+- ✅ GitHub Actions CI/CD
+- ✅ Despliega automáticamente en AKS vía ArgoCD
 
-# Navegador: https://localhost:8443
-# Usuario: admin
-# Contraseña: (output anterior)
+---
+
+## 📂 Estructura
+
+```
+src/
+├── ProductAPI/
+│   ├── Program.cs                    # Entry point, DI, Swagger
+│   ├── Controllers/ProductsController.cs   # 6 endpoints REST
+│   ├── Models/Product.cs             # Domain model
+│   └── Repositories/ProductRepository.cs   # In-memory storage
+└── ProductAPI.Tests/
+    ├── ProductRepositoryTests.cs     # 7 tests
+    └── ProductsControllerTests.cs    # 8 tests
+
+docker/
+└── Dockerfile                        # Multistage: build → runtime
+
+helm/
+├── Chart.yaml, values.yaml, values-acr.yaml
+└── templates/ (deployment, service, hpa, ingress)
+
+.github/workflows/ci-cd.yml           # Build → Test → ACR Push → Auto-deploy
+azure/                                # PowerShell scripts para Azure
 ```
 
 ---
 
-## ✅ Probar Endpoints
+## 🚀 Quick Start
 
-```powershell
-# Health check
-curl http://<EXTERNAL-IP>/api/products/health
+### Tests
 
-# Obtener todos
-curl http://<EXTERNAL-IP>/api/products
+```bash
+dotnet test  # 15 tests passing ✅
+```
 
-# Crear producto
-curl -X POST http://<EXTERNAL-IP>/api/products `
-  -H "Content-Type: application/json" `
-  -d '{"name":"Laptop","description":"High-end laptop","price":999.99,"stock":5}'
+### Local Execution
+
+```bash
+dotnet run --project src/ProductAPI/ProductAPI.csproj
+# Swagger: http://localhost:5000/swagger
+```
+
+### Docker Local
+
+```bash
+docker build -f docker/Dockerfile -t productapi:local .
+docker run -p 8080:8080 productapi:local
 ```
 
 ---
 
-## 🔍 Debugging
+## 📡 API Endpoints
 
-```powershell
-# Ver pods
-kubectl get pods -n productapi -o wide
+| Método | Endpoint | Descripción |
+|--------|----------|------------|
+| GET | `/api/products` | Todos los productos |
+| GET | `/api/products/{id}` | Producto por ID |
+| POST | `/api/products` | Crear producto |
+| PUT | `/api/products/{id}` | Actualizar producto |
+| DELETE | `/api/products/{id}` | Eliminar producto |
+| GET | `/api/products/health` | Health check |
 
-# Ver logs
-kubectl logs -n productapi -l app=productapi -f
+---
 
-# Ver eventos
-kubectl get events -n productapi --sort-by='.lastTimestamp'
+## 🌐 GitOps Workflow
 
-# Ver HPA
-kubectl get hpa -n productapi
+```
+Código pusheado
+    ↓
+GitHub Actions: build → test → docker push
+    ↓
+values-acr.yaml actualizado automáticamente
+    ↓
+ArgoCD detecta cambio (cada 3 min)
+    ↓
+helm upgrade en Kubernetes
+    ↓
+Deployment automático ✅
+```
 
-# Ver todos los recursos
-kubectl get all -n productapi
+**Ver Infraestructura**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+
+---
+
+## ⚙️ Deployment Kubernetes
+
+```bash
+# Helm deploy
+helm upgrade --install productapi ./helm \
+  --namespace productapi --create-namespace \
+  --set image.repository=REGISTRY/productapi \
+  --set image.tag=v1.0.0
 ```
 
 ---
 
-## 📊 Flujo GitOps
+## 📚 Más info
 
-```
-1. Push a GitHub (main branch)
-        ↓
-2. GitHub Actions
-   - Build .NET
-   - Tests
-   - Build Docker image
-   - Push a ACR
-        ↓
-3. ArgoCD (monitorea repo)
-   - Detecta cambios
-   - Sincroniza manifests
-        ↓
-4. Kubernetes
-   - Aplica new deployment
-   - Escala pods (HPA)
-   - Actualiza servicios
-```
+- [Infrastructure Repo](https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure) - GitOps Central
+- [Personal Repo](https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3) - Referencia completa
 
----
-
-## ⚙️ Estructura de Scripts
-
-| Script | Propósito | Idempotente |
-|--------|-----------|------------|
-| `create-aks-cluster.ps1` | Crear AKS + NGINX Ingress | ✅ Sí |
-| `setup-acr-and-deploy.ps1` | ACR + Docker Build + Helm Deploy | ✅ Sí |
-| `setup-argocd.ps1` | Instalar ArgoCD + Application | ✅ Sí |
-| `verify-deploy.ps1` | Verificar estado completo | ✅ Solo lectura |
-| `delete-all-resources.ps1` | Limpiar Resource Group | ⚠️ Cuidado |
-
----
-
-## 💾 Archivos Versionados (NO excluidos del repo)
-
-```
-✅ helm/                    # Charts y valores
-✅ argocd/                  # Manifests de ArgoCD
-✅ azure/                   # Scripts de deployment
-✅ .github/workflows/       # CI/CD pipelines
-✅ docker/                  # Dockerfile
-```
-
-**Nota:** `.dockerignore` excluye estos archivos del contexto Docker (intencional), pero están versionados en Git.
-
----
-
-## 📋 Checklist de Deployment
-
-- [ ] ✅ `az account show` funciona
-- [ ] ✅ Ejecute `create-aks-cluster.ps1`
-- [ ] ✅ Ejecute `setup-acr-and-deploy.ps1`
-- [ ] ✅ Ejecute `setup-argocd.ps1`
-- [ ] ✅ Ejecute `verify-deploy.ps1` (todo verde)
-- [ ] ✅ Pruebe endpoints con curl
-- [ ] ✅ Acceda a ArgoCD UI
-- [ ] ✅ Ejecute `az group delete` para limpiar
-
----
-
-## 💰 Costos Estimados
-
-| Recurso | Costo |
-|---------|-------|
-| 2 x Standard_B2s (nodos AKS) | $30-50/mes |
-| Load Balancer (x2) | ~$32/mes |
-| Container Registry (Basic) | ~$5/mes |
-| **TOTAL** | **~$70-85/mes** |
-
-⏱️ **Durante pruebas (20 min):** ~$0.50
-
----
-
-## 🆘 Troubleshooting
-
-### LoadBalancer IP no aparece
-```powershell
-# Puede tomar 2-3 minutos
-kubectl get svc -n productapi -w
-```
-
-### Pods no están Running
-```powershell
-# Ver logs
-kubectl logs -n productapi -l app=productapi
-
-# Describir pod
-kubectl describe pod -n productapi <pod-name>
-```
-
-### ArgoCD no sincroniza
-```powershell
-# Ver Application status
-kubectl get application -n argocd productapi
-
-# Ver controller logs
-kubectl logs -n argocd deployment/argocd-application-controller
-```
-
-### Limpiar antes de re-ejecutar
-```powershell
-# Si algo falla, limpiar todo
-az group delete --name productapi-rg --yes
-
-# Esperar ~10 minutos
-# Luego re-ejecutar desde Paso 1
-```
-
----
-
-## 📝 Licencia
-
-MIT
-
----
-
-## 🎯 Próximos Pasos
-
-1. ✅ Código .NET completo y testeado
-2. ✅ Scripts de deployment automatizados e idempotentes
-3. ⏭️ Ejecutar los 5 pasos de deployment
-4. ⏭️ Grabar video demostrando todo funcionando
-5. ⏭️ Presentar proyecto
+**Estado:** ✅ Producción-Ready
