@@ -18,6 +18,7 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 ```
 GET    /api/products              # Obtener todos
 GET    /api/products/{id}         # Obtener por ID
+GET    /api/products/stats        # Estadísticas (total, promedio, max, min)
 POST   /api/products              # Crear
 PUT    /api/products/{id}         # Actualizar
 DELETE /api/products/{id}         # Eliminar
@@ -44,7 +45,7 @@ GET    /api/products/health       # Health check
 
 Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar productos.
 
-- ✅ 6 endpoints CRUD
+- ✅ 7 endpoints REST (CRUD + stats + health)
 - ✅ 15 tests unitarios (xUnit)
 - ✅ Dockerfile multistage
 - ✅ Helm Charts
