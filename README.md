@@ -274,7 +274,7 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 az group delete --name productapi-rg --yes
 ```
 
-Esto borra: AKS, ACR, Load Balancer, Storage, todo. (~$40/mes si no lo haces)
+Esto borra: AKS, ACR, Load Balancer, Storage, todo.
 
 ---
 
