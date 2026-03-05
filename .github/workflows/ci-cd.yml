@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 env:
-  ACR_NAME: productapiregistry163505
-  ACR_LOGIN_SERVER: productapiregistry163505.azurecr.io
+  ACR_NAME: productapiacrmpn
+  ACR_LOGIN_SERVER: productapiacrmpn.azurecr.io
   IMAGE_NAME: productapi
 
 jobs:
