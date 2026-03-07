@@ -2,7 +2,7 @@
 
 API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
-**Acceso en vivo:** https://productapi-unisabana.centralus.cloudapp.azure.com/api/products
+**Acceso en vivo:** http://productapi-mpn.centralus.cloudapp.azure.com/api/products
 
 ---
 
@@ -88,43 +88,43 @@ README.md                               # Este archivo
 
 ## 🌐 Acceso en Vivo
 
-**Base URL (PRODUCCION - FQDN permanente):**
+**Base URL (PRODUCCIÓN - FQDN permanente):**
 ```
-https://productapi-unisabana.centralus.cloudapp.azure.com
+http://productapi-mpn.centralus.cloudapp.azure.com
 ```
 
-**IP publica (puede cambiar):**
+**FQDN pública (recomendado):**
 ```
-20.84.230.209
+productapi-mpn.centralus.cloudapp.azure.com
 ```
 
 ### Ejemplos de uso
 
 **Health check:**
 ```bash
-curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products/health
+curl http://productapi-mpn.centralus.cloudapp.azure.com/api/products/health
 ```
 
 **Listar todos los productos:**
 ```bash
-curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products
+curl http://productapi-mpn.centralus.cloudapp.azure.com/api/products
 ```
 
 **Obtener estadísticas:**
 ```bash
-curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products/stats
+curl http://productapi-mpn.centralus.cloudapp.azure.com/api/products/stats
 ```
 
 **Crear producto:**
 ```bash
-curl -X POST https://productapi-unisabana.centralus.cloudapp.azure.com/api/products \
+curl -X POST http://productapi-mpn.centralus.cloudapp.azure.com/api/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Laptop","description":"Gaming laptop","price":1299.99}'
 ```
 
 **Swagger UI (documentación interactiva):**
 ```
-https://productapi-unisabana.centralus.cloudapp.azure.com/swagger
+http://productapi-mpn.centralus.cloudapp.azure.com/swagger
 ```
 
 ---
@@ -176,7 +176,7 @@ docker run -p 8080:8080 productapi:local
   "minimo": 9.99
 }
 ```
-
+.
 ---
 
 ## 🔄 CI/CD Pipeline (GitHub Actions)
@@ -217,13 +217,13 @@ GitHub Actions: Build → Test → Docker Push a ACR
     ↓
 Actualiza helm/values-acr.yaml con nueva imagen
     ↓
-ArgoCD detecta el cambio (~3 minutos)
+    ArgoCD detecta el cambio (~3 minutos)
     ↓
-kubectl apply de Helm charts
+    kubectl apply de Helm charts
     ↓
-Deployment actualizado automaticamente en AKS
+    Deployment actualizado automaticamente en AKS
     ↓
-Disponible en: https://productapi-unisabana.centralus.cloudapp.azure.com/api/...
+    Disponible en: http://productapi-mpn.centralus.cloudapp.azure.com/api/...
 
 Infraestructura (ArgoCD, Helm, K8s config):  
 👉 https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
@@ -239,6 +239,24 @@ helm upgrade --install productapi ./helm \
   --namespace productapi \
   --create-namespace \
   -f helm/values-acr.yaml
+```
+
+## 🔖 Imagen desplegada (ACR)
+
+La imagen usada por defecto en `helm/values-acr.yaml` se publica en Azure Container Registry. Valores actuales:
+
+- ACR repository: `productapiacrmpn.azurecr.io/productapi`
+- Último tag desplegado: `0b09ff4`
+
+Para desplegar una versión concreta edita `helm/values-acr.yaml` (campo `image.tag`) y aplica un `helm upgrade` o deja que el pipeline lo actualice automáticamente al hacer push.
+
+Ejemplo de `helm/values-acr.yaml`:
+
+```yaml
+image:
+  repository: productapiacrmpn.azurecr.io/productapi
+  tag: 0b09ff4
+  pullPolicy: Always
 ```
 
 ---
@@ -258,7 +276,7 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 ## 📚 Documentacion
 
 - **Infrastructure Repo (GitOps, ArgoCD, K8s)**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
-- **ArgoCD UI**: https://20.112.202.75 (usuario: admin, ver Infrastructure README)
+- **ArgoCD UI**: https://172.169.162.125 (usuario: admin, ver Infrastructure README)
 - [ArgoCD Docs](https://argo-cd.readthedocs.io/)
 - [Helm Docs](https://helm.sh/docs/)
 - [AKS Best Practices](https://learn.microsoft.com/en-us/azure/aks/)
@@ -280,4 +298,4 @@ Esto borra: AKS, ACR, Load Balancer, Storage, todo.
 
 **Estado:** Produccion-Ready  
 **Ultima actualizacion:** 2024  
-**URL en vivo:** https://productapi-unisabana.centralus.cloudapp.azure.com
+**URL en vivo:** http://productapi-mpn.centralus.cloudapp.azure.com
