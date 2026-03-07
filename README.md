@@ -1,79 +1,283 @@
 # Product API - Microservicio REST
 
-API REST para gestión de productos con despliegue en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
+API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
-**Acceso en vivo (Ingress IP):** http://172.168.96.52/api/products
-
----
-
-## Tecnologías
-
-- .NET 10
-- Docker
-- Kubernetes/AKS
-- Helm
-- NGINX Ingress Controller
-- ArgoCD
-- GitHub Actions
-- Azure Container Registry
+**Acceso en vivo:** https://productapi-unisabana.centralus.cloudapp.azure.com/api/products
 
 ---
 
-## Endpoints principales
+## 🚀 Tecnologías
 
-GET    /api/products
-GET    /api/products/{id}
-GET    /api/products/stats
-POST   /api/products
-PUT    /api/products/{id}
-DELETE /api/products/{id}
-GET    /api/products/health
+- **.NET 10** - Framework
+- **Docker** - Containerización (multietapa)
+- **Kubernetes/AKS** - Orquestación
+- **Helm 3** - Gestión de configuración
+- **NGINX Ingress Controller** - Enrutamiento HTTP(S)
+- **ArgoCD** - GitOps automático
+- **GitHub Actions** - CI/CD (Build → Test → Docker Push → Auto-deploy)
+- **Azure Container Registry** - Registry privado de imágenes
 
 ---
 
-## Acceso en vivo (detalles)
+## 📡 API REST - 7 Endpoints
 
-Base URL (IP Ingress):
 ```
-http://172.168.96.52
-```
-
-Health:
-```
-curl http://172.168.96.52/api/products/health
-```
-
-Swagger:
-```
-http://172.168.96.52/swagger
+GET    /api/products              # Obtener todos los productos
+GET    /api/products/{id}         # Obtener por ID
+GET    /api/products/stats        # Estadísticas (total, promedio, máximo, mínimo)
+POST   /api/products              # Crear nuevo producto
+PUT    /api/products/{id}         # Actualizar producto
+DELETE /api/products/{id}         # Eliminar producto
+GET    /api/products/health       # Health check
 ```
 
-Crear producto (ejemplo):
+---
+
+## 🎯 Descripción
+
+Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar productos.
+
+- ✅ 7 endpoints REST (CRUD + stats + health)
+- ✅ 14 tests unitarios (xUnit)
+- ✅ Dockerfile multistage (~150MB)
+- ✅ Helm Charts con values.yaml + values-acr.yaml
+- ✅ GitHub Actions CI/CD (ACR push automático)
+- ✅ Despliega automáticamente en AKS vía ArgoCD
+
+---
+
+## 📂 Estructura
+
 ```
-curl -X POST http://172.168.96.52/api/products \
+src/
+├── ProductAPI/
+│   ├── Program.cs                      # Entry point, DI, Swagger
+│   ├── Controllers/ProductsController.cs    # 7 endpoints REST
+│   ├── Models/Product.cs               # Domain model
+│   └── Repositories/ProductRepository.cs    # In-memory storage
+└── ProductAPI.Tests/
+    └── ProductsControllerTests.cs      # 14 tests (xUnit)
+
+docker/
+└── Dockerfile                          # Multistage: sdk → aspnet runtime
+
+helm/
+├── Chart.yaml
+├── values.yaml                         # Default values
+├── values-acr.yaml                     # ACR overrides (image tag versionado)
+└── templates/
+    ├── deployment.yaml
+    ├── service.yaml
+    ├── hpa.yaml                        # Horizontal Pod Autoscaler
+    └── ingress.yaml                    # NGINX Ingress
+
+.github/workflows/
+└── ci-cd.yml                           # Build → Test → Docker Push ACR → Update tag → Push
+
+azure/
+├── setup-argocd.ps1                    # Install ArgoCD + apply manifests
+├── create-aks-cluster.ps1              # Crear cluster
+├── setup-acr-and-deploy.ps1            # Setup ACR
+├── verify-deploy.ps1                   # Verificar despliegue
+└── delete-all-resources.ps1            # Limpiar (muy importante)
+
+README.md                               # Este archivo
+```
+
+---
+
+## 🌐 Acceso en Vivo
+
+**Base URL (PRODUCCION - FQDN permanente):**
+```
+https://productapi-unisabana.centralus.cloudapp.azure.com
+```
+
+**IP publica (puede cambiar):**
+```
+20.84.230.209
+```
+
+### Ejemplos de uso
+
+**Health check:**
+```bash
+curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products/health
+```
+
+**Listar todos los productos:**
+```bash
+curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products
+```
+
+**Obtener estadísticas:**
+```bash
+curl https://productapi-unisabana.centralus.cloudapp.azure.com/api/products/stats
+```
+
+**Crear producto:**
+```bash
+curl -X POST https://productapi-unisabana.centralus.cloudapp.azure.com/api/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Laptop","description":"Gaming laptop","price":1299.99}'
 ```
 
----
-
-## Despliegue / CI
-
-Las imágenes se publican en ACR y el despliegue se realiza vía ArgoCD/Helm. Valores actuales en helm/values-acr.yaml:
+**Swagger UI (documentación interactiva):**
 ```
-repository: productapiacrmpn.azurecr.io/productapi
-tag: 8e69a02dc456a0b837aa6e7ba33330babe1f5c21
+https://productapi-unisabana.centralus.cloudapp.azure.com/swagger
 ```
 
 ---
 
-## Infra / ArgoCD
+## 🚀 Quick Start (Local)
 
-ArgoCD UI:
+### Tests
+
+```bash
+dotnet test
+# Output: 14 passed OK
 ```
-http://172.169.162.125
+
+### Ejecucion Local
+
+```bash
+dotnet run --project src/ProductAPI/ProductAPI.csproj
+# Swagger: http://localhost:5000/swagger
+```
+
+### Docker Local
+
+```bash
+docker build -f docker/Dockerfile -t productapi:local .
+docker run -p 8080:8080 productapi:local
+# Probar: curl http://localhost:8080/api/products/health
 ```
 
 ---
 
-**Última actualización:** 07/03/2026
+## 📊 API Endpoints Detallados
+
+| Metodo | Endpoint | Body | Descripcion |
+|--------|----------|------|------------|
+| GET | `/api/products` | - | Lista todos los productos |
+| GET | `/api/products/{id}` | - | Obtiene producto por ID |
+| GET | `/api/products/stats` | - | Estadisticas: total, promedio, maximo, minimo |
+| POST | `/api/products` | `{name, description, price}` | Crear nuevo |
+| PUT | `/api/products/{id}` | `{name, description, price}` | Actualizar |
+| DELETE | `/api/products/{id}` | - | Eliminar |
+| GET | `/api/products/health` | - | Status de salud |
+
+**Ejemplo de respuesta `/stats`:**
+```json
+{
+  "total": 5,
+  "promedio": 299.99,
+  "maximo": 999.99,
+  "minimo": 9.99
+}
+```
+
+---
+
+## 🔄 CI/CD Pipeline (GitHub Actions)
+
+El pipeline se dispara automáticamente al hacer `git push` en `main`:
+
+```
+1. Checkout codigo
+2. Setup .NET 10
+3. dotnet restore (NuGet)
+4. dotnet build -c Release
+5. dotnet test (14 tests)
+6. Login a Azure Container Registry
+7. docker build -f docker/Dockerfile
+8. docker push → ACR (tag: git SHA + latest)
+9. sed actualiza values-acr.yaml con nuevo tag
+10. git push automatico
+    ↓
+    ArgoCD detecta (cada 3 min)
+    ↓
+    helm upgrade en Kubernetes
+    ↓
+    Rolling update (zero-downtime)
+```
+
+**No necesitas Docker Desktop.** Todo se construye en runners de GitHub en la nube.
+
+---
+
+## 🌐 GitOps Workflow
+
+```
+ProductAPI Repo (main branch)
+    ↓
+git push
+    ↓
+GitHub Actions: Build → Test → Docker Push a ACR
+    ↓
+Actualiza helm/values-acr.yaml con nueva imagen
+    ↓
+ArgoCD detecta el cambio (~3 minutos)
+    ↓
+kubectl apply de Helm charts
+    ↓
+Deployment actualizado automaticamente en AKS
+    ↓
+Disponible en: https://productapi-unisabana.centralus.cloudapp.azure.com/api/...
+
+Infraestructura (ArgoCD, Helm, K8s config):  
+👉 https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+```
+
+---
+
+## ⚙️ Despliegue Manual en Kubernetes
+
+```bash
+# Usar valores desde ProductAPI repo
+helm upgrade --install productapi ./helm \
+  --namespace productapi \
+  --create-namespace \
+  -f helm/values-acr.yaml
+```
+
+---
+
+## 🔐 Secretos Necesarios (GitHub)
+
+Para que el CI/CD funcione, agrega estos **Repository Secrets** en:  
+https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/settings/secrets/actions
+
+| Secret | Ejemplo |
+|--------|---------|
+| `ACR_USERNAME` | `productapiregistry163505` |
+| `ACR_PASSWORD` | `(access key del ACR)` |
+
+---
+
+## 📚 Documentacion
+
+- **Infrastructure Repo (GitOps, ArgoCD, K8s)**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+- **ArgoCD UI**: https://20.112.202.75 (usuario: admin, ver Infrastructure README)
+- [ArgoCD Docs](https://argo-cd.readthedocs.io/)
+- [Helm Docs](https://helm.sh/docs/)
+- [AKS Best Practices](https://learn.microsoft.com/en-us/azure/aks/)
+- [Kubernetes Docs](https://kubernetes.io/docs/)
+
+---
+
+## ⚠️ Importante: Limpieza
+
+**Cuando termines el assignment, elimina TODOS los recursos** para evitar cargos:
+
+```bash
+az group delete --name productapi-rg --yes
+```
+
+Esto borra: AKS, ACR, Load Balancer, Storage, todo.
+
+---
+
+**Estado:** Produccion-Ready  
+**Ultima actualizacion:** 2024  
+**URL en vivo:** https://productapi-unisabana.centralus.cloudapp.azure.com
