@@ -6,7 +6,7 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 
 ---
 
-## 🚀 Tecnologías
+## Tecnologías
 
 - **.NET 10** - Framework
 - **Docker** - Containerización (multietapa)
@@ -19,7 +19,7 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 
 ---
 
-## 📡 API REST - 7 Endpoints
+## API REST - 7 Endpoints
 
 ```
 GET    /api/products              # Obtener todos los productos
@@ -33,20 +33,20 @@ GET    /api/products/health       # Health check
 
 ---
 
-## 🎯 Descripción
+## Descripción
 
 Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar productos.
 
-- ✅ 7 endpoints REST (CRUD + stats + health)
-- ✅ 14 tests unitarios (xUnit)
-- ✅ Dockerfile multistage (~150MB)
-- ✅ Helm Charts con values.yaml + values-acr.yaml
-- ✅ GitHub Actions CI/CD (ACR push automático)
-- ✅ Despliega automáticamente en AKS vía ArgoCD
+- 7 endpoints REST (CRUD + stats + health)
+- 14 tests unitarios (xUnit)
+- Dockerfile multistage (~150MB)
+- Helm Charts con values.yaml + values-acr.yaml
+- GitHub Actions CI/CD (ACR push automático)
+- Despliega automáticamente en AKS vía ArgoCD
 
 ---
 
-## 📂 Estructura
+## Estructura
 
 ```
 src/
@@ -79,23 +79,18 @@ azure/
 ├── create-aks-cluster.ps1              # Crear cluster
 ├── setup-acr-and-deploy.ps1            # Setup ACR
 ├── verify-deploy.ps1                   # Verificar despliegue
-└── delete-all-resources.ps1            # Limpiar (muy importante)
+└── delete-all-resources.ps1            # Limpiar
 
 README.md                               # Este archivo
 ```
 
 ---
 
-## 🌐 Acceso en Vivo
+## Acceso en Vivo
 
 **Base URL (PRODUCCIÓN - FQDN permanente):**
 ```
 http://productapi-mpn.centralus.cloudapp.azure.com
-```
-
-**FQDN pública (recomendado):**
-```
-productapi-mpn.centralus.cloudapp.azure.com
 ```
 
 ### Ejemplos de uso
@@ -129,7 +124,7 @@ http://productapi-mpn.centralus.cloudapp.azure.com/swagger
 
 ---
 
-## 🚀 Quick Start (Local)
+## Quick Start (Local)
 
 ### Tests
 
@@ -155,7 +150,7 @@ docker run -p 8080:8080 productapi:local
 
 ---
 
-## 📊 API Endpoints Detallados
+## API Endpoints Detallados
 
 | Metodo | Endpoint | Body | Descripcion |
 |--------|----------|------|------------|
@@ -179,7 +174,7 @@ docker run -p 8080:8080 productapi:local
 .
 ---
 
-## 🔄 CI/CD Pipeline (GitHub Actions)
+## CI/CD Pipeline (GitHub Actions)
 
 El pipeline se dispara automáticamente al hacer `git push` en `main`:
 
@@ -202,11 +197,11 @@ El pipeline se dispara automáticamente al hacer `git push` en `main`:
     Rolling update (zero-downtime)
 ```
 
-**No necesitas Docker Desktop.** Todo se construye en runners de GitHub en la nube.
+**No se necesita Docker Desktop.** Todo se construye en runners de GitHub en la nube.
 
 ---
 
-## 🌐 GitOps Workflow
+## GitOps Workflow
 
 ```
 ProductAPI Repo (main branch)
@@ -226,12 +221,12 @@ Actualiza helm/values-acr.yaml con nueva imagen
     Disponible en: http://productapi-mpn.centralus.cloudapp.azure.com/api/...
 
 Infraestructura (ArgoCD, Helm, K8s config):  
-👉 https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
 ```
 
 ---
 
-## ⚙️ Despliegue Manual en Kubernetes
+## Despliegue Manual en Kubernetes
 
 ```bash
 # Usar valores desde ProductAPI repo
@@ -241,7 +236,7 @@ helm upgrade --install productapi ./helm \
   -f helm/values-acr.yaml
 ```
 
-## 🔖 Imagen desplegada (ACR)
+## Imagen desplegada (ACR)
 
 La imagen usada por defecto en `helm/values-acr.yaml` se publica en Azure Container Registry. Valores actuales:
 
@@ -261,7 +256,7 @@ image:
 
 ---
 
-## 🔐 Secretos Necesarios (GitHub)
+## Secretos Necesarios (GitHub)
 
 Para que el CI/CD funcione, agrega estos **Repository Secrets** en:  
 https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/settings/secrets/actions
@@ -273,7 +268,7 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 
 ---
 
-## 📚 Documentacion
+## Documentacion
 
 - **Infrastructure Repo (GitOps, ArgoCD, K8s)**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
 - **ArgoCD UI**: https://172.169.162.125 (usuario: admin, ver Infrastructure README)
@@ -284,9 +279,9 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 
 ---
 
-## ⚠️ Importante: Limpieza
+## Limpieza
 
-**Cuando termines el assignment, elimina TODOS los recursos** para evitar cargos:
+**Elimina TODOS los recursos**:
 
 ```bash
 az group delete --name productapi-rg --yes
@@ -296,6 +291,6 @@ Esto borra: AKS, ACR, Load Balancer, Storage, todo.
 
 ---
 
-**Estado:** Produccion-Ready  
-**Ultima actualizacion:** 2024  
-**URL en vivo:** http://productapi-mpn.centralus.cloudapp.azure.com
+  
+**Ultima actualizacion:** 07/03/2026  
+
