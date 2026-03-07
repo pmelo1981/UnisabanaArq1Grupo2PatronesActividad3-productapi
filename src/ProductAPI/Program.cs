@@ -6,14 +6,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Agregar servicios
 builder.Services.AddSingleton<ProductRepository>();
 builder.Services.AddControllers();
+// Habilitar generación de OpenAPI/Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configurar el pipeline HTTP
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Exponer OpenAPI y Swagger UI siempre
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.MapControllers();
