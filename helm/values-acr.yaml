@@ -1,7 +1,7 @@
 replicaCount: 2
 image:
   repository: productapiacrmpn.azurecr.io/productapi
-  tag: 3fcfdefe8bcd4144d6d1f05ab3d1a7adac0662f2
+  tag: 906433ad1c77c0e40ff7d905684f8c1a2f9008a8
   pullPolicy: Always
 service:
   type: ClusterIP
