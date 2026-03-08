@@ -3,7 +3,7 @@
 API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
 **Acceso en vivo:** http://productapi-mpn.centralus.cloudapp.azure.com/api/products
-
+.
 ---
 
 ## Tecnologías
