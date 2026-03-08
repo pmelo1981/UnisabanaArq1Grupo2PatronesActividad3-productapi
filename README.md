@@ -1,5 +1,20 @@
 # Product API - Microservicio REST
 
+## UnisabanaArq1Grupo2 PatronesActividad3
+Presentación de la Actividad
+
+Asignatura: Arquitectura de Software
+
+Profesor: Daniel Orlando Saavedra Fonnegra
+
+Integrantes del grupo:
+- Pablo Andrés Melo García
+- Camilo Andres Padilla Garcia
+- Edison Kenneth Campos Avila
+- Cristian Alonso Cardona Vega
+- Jorge Andres Ayala Valero
+- John Harold Diaz Gonzale
+
 API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
 **Acceso en vivo:** http://productapi-mpn.centralus.cloudapp.azure.com/api/products
