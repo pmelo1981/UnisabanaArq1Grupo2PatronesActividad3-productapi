@@ -38,7 +38,7 @@ GET    /api/products/health       # Health check
 Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar productos.
 
 - 7 endpoints REST (CRUD + stats + health)
-- 14 tests unitarios (xUnit)
+- 15 tests unitarios (xUnit)
 - Dockerfile multistage (~150MB)
 - Helm Charts con values.yaml + values-acr.yaml
 - GitHub Actions CI/CD (ACR push automático)
@@ -56,7 +56,7 @@ src/
 │   ├── Models/Product.cs               # Domain model
 │   └── Repositories/ProductRepository.cs    # In-memory storage
 └── ProductAPI.Tests/
-    └── ProductsControllerTests.cs      # 14 tests (xUnit)
+    └── ProductsControllerTests.cs      # 15 tests (xUnit)
 
 docker/
 └── Dockerfile                          # Multistage: sdk → aspnet runtime
@@ -130,14 +130,14 @@ http://productapi-mpn.centralus.cloudapp.azure.com/swagger
 
 ```bash
 dotnet test
-# Output: 14 passed OK
+# Output: 15 passed OK
 ```
 
 ### Ejecucion Local
 
 ```bash
 dotnet run --project src/ProductAPI/ProductAPI.csproj
-# Swagger: http://localhost:5000/swagger
+# Swagger: http://localhost:5034/swagger
 ```
 
 ### Docker Local
@@ -171,7 +171,6 @@ docker run -p 8080:8080 productapi:local
   "minimo": 9.99
 }
 ```
-.
 ---
 
 ## CI/CD Pipeline (GitHub Actions)
@@ -183,7 +182,7 @@ El pipeline se dispara automáticamente al hacer `git push` en `main`:
 2. Setup .NET 10
 3. dotnet restore (NuGet)
 4. dotnet build -c Release
-5. dotnet test (14 tests)
+5. dotnet test (15 tests)
 6. Login a Azure Container Registry
 7. docker build -f docker/Dockerfile
 8. docker push → ACR (tag: git SHA + latest)
@@ -241,7 +240,7 @@ helm upgrade --install productapi ./helm \
 La imagen usada por defecto en `helm/values-acr.yaml` se publica en Azure Container Registry. Valores actuales:
 
 - ACR repository: `productapiacrmpn.azurecr.io/productapi`
-- Último tag desplegado: `0b09ff4`
+- Último tag desplegado: `aad0d3511a6ffce2477049786ab47e4e6f563476`
 
 Para desplegar una versión concreta edita `helm/values-acr.yaml` (campo `image.tag`) y aplica un `helm upgrade` o deja que el pipeline lo actualice automáticamente al hacer push.
 
@@ -250,7 +249,7 @@ Ejemplo de `helm/values-acr.yaml`:
 ```yaml
 image:
   repository: productapiacrmpn.azurecr.io/productapi
-  tag: 0b09ff4
+  tag: aad0d3511a6ffce2477049786ab47e4e6f563476
   pullPolicy: Always
 ```
 
@@ -292,5 +291,5 @@ Esto borra: AKS, ACR, Load Balancer, Storage, todo.
 ---
 
   
-**Ultima actualizacion:** 07/03/2026  
+**Ultima actualizacion:** 08/03/2026
 
