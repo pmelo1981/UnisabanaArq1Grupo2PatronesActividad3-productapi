@@ -31,3 +31,8 @@ env:
 ingress:
   enabled: true
   host: ""  # Dejar vacio para acceso directo por IP
+
+datadog:
+  env: "production"
+  service: "productapi"
+  version: "1.0.0"

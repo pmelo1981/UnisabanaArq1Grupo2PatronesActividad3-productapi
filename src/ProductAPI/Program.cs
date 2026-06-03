@@ -1,7 +1,15 @@
 using ProductAPI.Models;
 using ProductAPI.Repositories;
+using StatsdClient;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configurar métricas customizadas para Datadog
+DogStatsd.Configure(new StatsdConfig
+{
+    StatsdServerName = Environment.GetEnvironmentVariable("DD_AGENT_HOST") ?? "127.0.0.1",
+    StatsdPort = 8125,
+});
 
 // Agregar servicios
 builder.Services.AddSingleton<ProductRepository>();

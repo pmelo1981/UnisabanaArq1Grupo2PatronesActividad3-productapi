@@ -25,3 +25,8 @@ env:
 ingress:
   enabled: true
   host: "productapi-mpn.centralus.cloudapp.azure.com"
+
+datadog:
+  env: "production"
+  service: "productapi"
+  version: "1.0.0"

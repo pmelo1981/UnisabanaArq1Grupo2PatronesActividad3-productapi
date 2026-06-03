@@ -32,6 +32,16 @@ spec:
         - name: {{ .name }}
           value: {{ .value | quote }}
         {{- end }}
+        - name: DD_ENV
+          value: {{ .Values.datadog.env | quote }}
+        - name: DD_SERVICE
+          value: {{ .Values.datadog.service | quote }}
+        - name: DD_VERSION
+          value: {{ .Values.datadog.version | default .Chart.AppVersion | quote }}
+        - name: DD_AGENT_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
         livenessProbe:
           httpGet:
             path: /api/products/health
