@@ -36,5 +36,3 @@ datadog:
   env: "production"
   service: "productapi"
   version: "1.0.0"
-  apiKey: "90678f63ba7bc0c488401a258ee13ee9"
-  appKey: "ddapp_sVfgK8F1xnQ4vlhDjtds9RG6pDdp484Iki"
