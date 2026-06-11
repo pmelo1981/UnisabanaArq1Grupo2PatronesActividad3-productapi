@@ -5,17 +5,21 @@ using ProductAPI.Controllers;
 using ProductAPI.Models;
 using ProductAPI.Repositories;
 
+using Microsoft.Extensions.Logging;
+
 namespace ProductAPI.Tests;
 
 public class ProductsControllerTests
 {
     private readonly ProductRepository _repository;
+    private readonly Mock<ILogger<ProductsController>> _loggerMock;
     private readonly ProductsController _controller;
 
     public ProductsControllerTests()
     {
         _repository = new ProductRepository();
-        _controller = new ProductsController(_repository);
+        _loggerMock = new Mock<ILogger<ProductsController>>();
+        _controller = new ProductsController(_repository, _loggerMock.Object);
     }
 
     [Fact]
